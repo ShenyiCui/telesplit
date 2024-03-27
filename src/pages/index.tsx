@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import FriendsTab from "@/components/friends-tab";
+import GroupsTab from "@/components/groups-tab";
 import SkeletonLoader from "@/components/skeleton-loader";
 
 const tabs = [{ name: "FRIENDS" }, { name: "GROUPS" }, { name: "ACTIVITY" }];
@@ -132,6 +133,7 @@ const Home = () => {
         </nav>
 
         {currentTab === "FRIENDS" && <FriendsTab />}
+        {currentTab === "GROUPS" && <GroupsTab />}
       </div>
     </div>
   );

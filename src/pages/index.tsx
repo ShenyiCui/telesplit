@@ -10,7 +10,7 @@ function classNames(...classes: string[]) {
 }
 
 const LoadingMoneySkeleton = () => (
-  <div className="bg-slate-200 h-8 w-full animate-pulse" />
+  <div className="bg-slate-200 h-7 w-full animate-pulse" />
 );
 
 const LoadingUserProfileSkeleton = () => (
@@ -82,7 +82,7 @@ const Home = () => {
                 <div className="truncate text-sm font-medium text-gray-500">
                   You Owe
                 </div>
-                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900 flex justify-center">
+                <div className="mt-1 text-xl w-full font-semibold tracking-tight text-gray-900 flex justify-center">
                   <SkeletonLoader
                     isLoading={isLoading}
                     skeleton={<LoadingMoneySkeleton />}
@@ -98,7 +98,7 @@ const Home = () => {
                 <div className="truncate text-sm font-medium text-gray-500">
                   You Are Owed
                 </div>
-                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900 flex justify-center">
+                <div className="mt-1 text-xl w-full font-semibold tracking-tight text-gray-900 flex justify-center">
                   <SkeletonLoader
                     isLoading={isLoading}
                     skeleton={<LoadingMoneySkeleton />}

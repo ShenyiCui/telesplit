@@ -1,128 +1,51 @@
-import React, { useEffect, useState } from "react";
-import {
-  Bars3CenterLeftIcon,
-  BarsArrowUpIcon,
-  UsersIcon,
-} from "@heroicons/react/16/solid";
-
-type Friend = {
-  id: string;
-  name: string;
-  amount: number;
-};
+import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import FriendsTab from "@/components/friends-tab";
+import SkeletonLoader from "@/components/skeleton-loader";
 
 const tabs = [{ name: "FRIENDS" }, { name: "GROUPS" }, { name: "ACTIVITY" }];
-const friends = [
-  {
-    id: "friends-1",
-    name: "Zong Xun",
-    amount: 15,
-  },
-  {
-    id: "friends-2",
-    name: "Santosh Muthukrishnan",
-    amount: 200,
-  },
-  {
-    id: "friends-3",
-    name: "Winston Lim",
-    amount: -25,
-  },
-  {
-    id: "friends-4",
-    name: "Samuel Tan",
-    amount: 100,
-  },
-  {
-    id: "friends-5",
-    name: "Shawn Lim",
-    amount: -50,
-  },
-  {
-    id: "friends-6",
-    name: "James Lim",
-    amount: 50,
-  },
-  {
-    id: "friends-7",
-    name: "Daniel Lim",
-    amount: 0,
-  },
-  {
-    id: "friends-8",
-    name: "John Lim",
-    amount: 0,
-  },
-  {
-    id: "friends-9",
-    name: "Jane Lim",
-    amount: 0,
-  },
-  {
-    id: "friends-10",
-    name: "Jenny Lim",
-    amount: 0,
-  },
-] as Friend[];
 
 function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const LoadingFriendsSkeleton = () => {
-  const skeleton = Array.from(Array(5).keys()).map((i) => `skeleton-${i}`);
-  return (
-    <>
-      {skeleton.map((s) => (
-        <li
-          key={s}
-          className="col-span-1 flex rounded-md shadow-sm animate-pulse"
-        >
-          <div className="flex h-[58px] w-16 flex-shrink-0 items-center justify-center rounded-l-md text-white bg-slate-200" />
-          <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
-            <div className="flex-1 truncate px-4 py-2 text-sm">
-              <div className="bg-slate-200 h-3 w-11 mb-2" />
-              <div className="bg-slate-200 h-3 w-24" />
-            </div>
-            <div className="flex-shrink-0 pr-2">
-              <div className="bg-slate-200 rounded-full h-6 w-6" />
-            </div>
-          </div>
-        </li>
-      ))}
-    </>
-  );
-};
-
 const LoadingMoneySkeleton = () => (
   <div className="bg-slate-200 h-8 w-full animate-pulse" />
 );
 
+const LoadingUserProfileSkeleton = () => (
+  <>
+    <div className="bg-slate-200 h-16 w-16 rounded-full animate-pulse" />
+    <div className="bg-slate-200 h-4 w-16 animate-pulse" />
+  </>
+);
+
+interface User {
+  name: string;
+  youOwe: number;
+  youAreOwed: number;
+}
+
+const userObject = {
+  name: "Shenyi Cui",
+  youOwe: 50,
+  youAreOwed: 1000,
+} as User;
+
+const fetchUser = () => {
+  return new Promise<User>((resolve) => {
+    setTimeout(() => {
+      resolve(userObject);
+    }, 2500);
+  });
+};
+
 const Home = () => {
   const [currentTab, setCurrentTab] = useState("FRIENDS");
-  const [friendsData, setFriendsData] = useState<Friend[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const getFriendsData = async () => {
-    console.log("fetching data");
-    try {
-      setIsLoading(true);
-      const fetchedData = await new Promise<Friend[]>((resolve) => {
-        setTimeout(() => {
-          resolve(friends);
-        }, 4000);
-      });
-      setFriendsData(fetchedData);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    getFriendsData();
-  }, []);
+  const { data: user, isLoading } = useQuery({
+    queryKey: ["user"],
+    queryFn: fetchUser,
+  });
 
   const handleTabChange = (tabName: string) => {
     setCurrentTab(tabName);
@@ -135,33 +58,53 @@ const Home = () => {
           <h1 className="text-white text-xl	font-light">TELESPLIT</h1>
         </div>
 
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center px-5">
           <div className="flex flex-col items-center gap-2">
-            <div className="flex justify-center items-center h-16 w-16 rounded-full bg-white">
-              <span className="text-[#4CBB9B] text-3xl">SC</span>
-            </div>
-            <span className="text-white text-xs">Shenyi Cui</span>
+            <SkeletonLoader
+              isLoading={isLoading}
+              skeleton={<LoadingUserProfileSkeleton />}
+            >
+              <div className="flex justify-center items-center h-16 w-16 rounded-full bg-white">
+                <span className="text-[#4CBB9B] text-3xl">
+                  {user?.name
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")}
+                </span>
+              </div>
+              <span className="text-white text-xs">{user?.name}</span>
+            </SkeletonLoader>
           </div>
 
-          <div className="flex mx-5 py-2 bg-white rounded-md mt-4">
+          <div className="flex w-full py-2 bg-white rounded-md mt-4">
             <div className="w-full border-r-2 flex justify-center">
-              <div className="flex flex-col w-full items-center px-8">
+              <div className="flex flex-col flex-1 w-full items-center px-8">
                 <div className="truncate text-sm font-medium text-gray-500">
                   You Owe
                 </div>
-                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900">
-                  <LoadingMoneySkeleton />
+                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900 flex justify-center">
+                  <SkeletonLoader
+                    isLoading={isLoading}
+                    skeleton={<LoadingMoneySkeleton />}
+                  >
+                    ${user?.youOwe?.toFixed(2)}
+                  </SkeletonLoader>
                 </div>
               </div>
             </div>
 
             <div className="w-full flex justify-center">
-              <div className="flex flex-col w-full items-center px-8">
+              <div className="flex flex-col flex-1 w-full items-center px-8">
                 <div className="truncate text-sm font-medium text-gray-500">
                   You Are Owed
                 </div>
-                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900">
-                  <LoadingMoneySkeleton />
+                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900 flex justify-center">
+                  <SkeletonLoader
+                    isLoading={isLoading}
+                    skeleton={<LoadingMoneySkeleton />}
+                  >
+                    ${user?.youAreOwed?.toFixed(2)}
+                  </SkeletonLoader>
                 </div>
               </div>
             </div>
@@ -188,93 +131,7 @@ const Home = () => {
           ))}
         </nav>
 
-        <div className="w-full bg-white">
-          <div className="flex rounded-md shadow-sm">
-            <div className="relative flex flex-grow items-stretch focus-within:z-10">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <UsersIcon
-                  className="h-5 w-5 text-gray-400"
-                  aria-hidden="true"
-                />
-              </div>
-              <input
-                type="text"
-                className="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="John Smith"
-              />
-            </div>
-            <button
-              type="button"
-              className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
-            >
-              <BarsArrowUpIcon
-                className="-ml-0.5 h-5 w-5 text-gray-400"
-                aria-hidden="true"
-              />
-              Sort
-            </button>
-          </div>
-        </div>
-
-        <div className="flex flex-col h-full gap-4 overflow-y-auto pb-4">
-          {!isLoading &&
-            friendsData.map((friend) => {
-              const isSettledUp = friend.amount === 0;
-              const isOwed = friend.amount > 0;
-              const bgColor = isSettledUp
-                ? "bg-gray-500"
-                : isOwed
-                ? "bg-greenBg"
-                : "bg-redBg";
-              const money = isSettledUp
-                ? "All settled up"
-                : isOwed
-                ? `You are owed $${friend.amount}`
-                : `You owe $${-friend.amount}`;
-              const initals = friend.name
-                .split(" ")
-                .map((n) => n[0])
-                .join("");
-
-              return (
-                <li
-                  key={friend.id}
-                  className="col-span-1 flex rounded-md shadow-sm"
-                >
-                  <div
-                    className={classNames(
-                      "flex w-16 flex-shrink-0 items-center justify-center rounded-l-md text-sm font-medium text-white",
-                      bgColor
-                    )}
-                  >
-                    {initals}
-                  </div>
-                  <div className="flex flex-1 items-center justify-between truncate rounded-r-md border-b border-r border-t border-gray-200 bg-white">
-                    <div className="flex-1 truncate px-4 py-2 text-sm">
-                      <a className="font-medium text-gray-900 hover:text-gray-600">
-                        {friend.name}
-                      </a>
-                      <p className="text-gray-500">{money}</p>
-                    </div>
-                    <div className="flex-shrink-0 pr-2">
-                      <button
-                        type="button"
-                        className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-transparent bg-white text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
-                      >
-                        <span className="sr-only">Open options</span>
-                        <Bars3CenterLeftIcon
-                          className="h-5 w-5"
-                          aria-hidden="true"
-                        />
-                      </button>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-
-          {isLoading && <LoadingFriendsSkeleton />}
-        </div>
+        {currentTab === "FRIENDS" && <FriendsTab />}
       </div>
     </div>
   );

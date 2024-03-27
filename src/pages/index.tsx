@@ -69,7 +69,7 @@ function classNames(...classes: string[]) {
   return classes.filter(Boolean).join(" ");
 }
 
-const LoadingSkeleton = () => {
+const LoadingFriendsSkeleton = () => {
   const skeleton = Array.from(Array(5).keys()).map((i) => `skeleton-${i}`);
   return (
     <>
@@ -93,6 +93,10 @@ const LoadingSkeleton = () => {
     </>
   );
 };
+
+const LoadingMoneySkeleton = () => (
+  <div className="bg-slate-200 h-8 w-full animate-pulse" />
+);
 
 const Home = () => {
   const [currentTab, setCurrentTab] = useState("FRIENDS");
@@ -141,24 +145,24 @@ const Home = () => {
 
           <div className="flex mx-5 py-2 bg-white rounded-md mt-4">
             <div className="w-full border-r-2 flex justify-center">
-              <div>
-                <dt className="truncate text-sm font-medium text-gray-500">
+              <div className="flex flex-col w-full items-center px-8">
+                <div className="truncate text-sm font-medium text-gray-500">
                   You Owe
-                </dt>
-                <dd className="mt-1 text-2xl font-semibold tracking-tight text-gray-900">
-                  $1,000.00
-                </dd>
+                </div>
+                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900">
+                  <LoadingMoneySkeleton />
+                </div>
               </div>
             </div>
 
             <div className="w-full flex justify-center">
-              <div>
-                <dt className="truncate text-sm font-medium text-gray-500">
+              <div className="flex flex-col w-full items-center px-8">
+                <div className="truncate text-sm font-medium text-gray-500">
                   You Are Owed
-                </dt>
-                <dd className="mt-1 text-2xl font-semibold tracking-tight text-gray-900">
-                  $1,000.00
-                </dd>
+                </div>
+                <div className="mt-1 text-2xl w-full font-semibold tracking-tight text-gray-900">
+                  <LoadingMoneySkeleton />
+                </div>
               </div>
             </div>
           </div>
@@ -269,7 +273,7 @@ const Home = () => {
               );
             })}
 
-          {isLoading && <LoadingSkeleton />}
+          {isLoading && <LoadingFriendsSkeleton />}
         </div>
       </div>
     </div>

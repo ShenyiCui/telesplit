@@ -1,6 +1,8 @@
-import React from "react";
-import SkeletonLoader from "@/components/skeleton-loader";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+
+import SkeletonLoader from "@/components/skeleton-loader";
+import Select from "@/components/select";
 
 import { groups } from "./mock-data";
 
@@ -116,11 +118,35 @@ const fetchGroups = async () => {
   });
 };
 
+const filterOptions = [
+  { label: "None", value: "none" },
+  { label: "Groups with outstanding balances", value: "outstanding" },
+  { label: "Groups you owe", value: "owe" },
+  { label: "Groups who owe you", value: "owed" },
+];
+
 const GroupsTab = () => {
+  const [selectedOption, setSelectedOption] = useState("none");
+  const [showSelect, setShowSelect] = useState(false);
+
   const { data: groupsData, isLoading } = useQuery({
     queryKey: ["groups"],
     queryFn: fetchGroups,
   });
+
+  const handleSelectClick = () => {
+    setShowSelect(true);
+  };
+
+  const handleSelectChange = (value: string) => {
+    setSelectedOption(value);
+    setShowSelect(false);
+  };
+
+  const handleSelectCancel = () => {
+    setShowSelect(false);
+  };
+
   return (
     <>
       <div className="w-full bg-white">
@@ -141,6 +167,7 @@ const GroupsTab = () => {
           <button
             type="button"
             className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            onClick={handleSelectClick}
           >
             <AdjustmentsHorizontalIcon
               className="-ml-0.5 h-5 w-5 text-gray-400"
@@ -161,6 +188,15 @@ const GroupsTab = () => {
           ))}
         </SkeletonLoader>
       </div>
+
+      {showSelect && (
+        <Select
+          options={filterOptions}
+          value={selectedOption}
+          onCancel={handleSelectCancel}
+          onChange={handleSelectChange as (value: unknown) => void}
+        />
+      )}
     </>
   );
 };

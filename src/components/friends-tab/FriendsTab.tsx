@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+
 import SkeletonLoader from "@/components/skeleton-loader/";
+import Select from "@/components/select";
+
 import { Bars3CenterLeftIcon, UsersIcon } from "@heroicons/react/16/solid";
 import { AdjustmentsHorizontalIcon } from "@heroicons/react/24/outline";
-
 import { friends } from "./mock-data";
 
 type Friend = {
@@ -101,11 +103,34 @@ const fetchFriendsData = () => {
   });
 };
 
+const filterOptions = [
+  { label: "None", value: "none" },
+  { label: "Friends with outstanding balances", value: "outstanding" },
+  { label: "Friends you owe", value: "owe" },
+  { label: "Friends who owe you", value: "owed" },
+];
+
 const FriendsTab = () => {
+  const [selectedOption, setSelectedOption] = useState("none");
+  const [showSelect, setShowSelect] = useState(false);
+
   const { data: friendsData, isLoading } = useQuery({
     queryKey: ["friends"],
     queryFn: fetchFriendsData,
   });
+
+  const handleSelectClick = () => {
+    setShowSelect(true);
+  };
+
+  const handleSelectChange = (value: string) => {
+    setSelectedOption(value);
+    setShowSelect(false);
+  };
+
+  const handleSelectCancel = () => {
+    setShowSelect(false);
+  };
 
   return (
     <>
@@ -124,6 +149,7 @@ const FriendsTab = () => {
           <button
             type="button"
             className="relative -ml-px inline-flex items-center gap-x-1.5 rounded-r-md px-3 py-2 text-sm font-semibold text-gray-900 ring-1 ring-inset ring-gray-300 hover:bg-gray-50"
+            onClick={handleSelectClick}
           >
             <AdjustmentsHorizontalIcon
               className="-ml-0.5 h-5 w-5 text-gray-400"
@@ -144,6 +170,15 @@ const FriendsTab = () => {
           ))}
         </SkeletonLoader>
       </div>
+
+      {showSelect && (
+        <Select
+          options={filterOptions}
+          value={selectedOption}
+          onCancel={handleSelectCancel}
+          onChange={handleSelectChange as (value: unknown) => void}
+        />
+      )}
     </>
   );
 };

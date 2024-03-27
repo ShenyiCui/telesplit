@@ -113,11 +113,16 @@ const filterOptions = [
 const FriendsTab = () => {
   const [selectedOption, setSelectedOption] = useState("none");
   const [showSelect, setShowSelect] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { data: friendsData, isLoading } = useQuery({
     queryKey: ["friends"],
     queryFn: fetchFriendsData,
   });
+
+  const displayFriends = friendsData?.filter(
+    (friend) => friend.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
+  );
 
   const handleSelectClick = () => {
     setShowSelect(true);
@@ -142,6 +147,8 @@ const FriendsTab = () => {
             </div>
             <input
               type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               placeholder="Edsger W. Dijkstra"
             />
@@ -165,7 +172,7 @@ const FriendsTab = () => {
           isLoading={isLoading}
           skeleton={<LoadingFriendsSkeleton />}
         >
-          {friendsData?.map((friend) => (
+          {displayFriends?.map((friend) => (
             <Friend key={friend.id} friend={friend} />
           ))}
         </SkeletonLoader>

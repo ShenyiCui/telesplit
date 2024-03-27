@@ -128,11 +128,16 @@ const filterOptions = [
 const GroupsTab = () => {
   const [selectedOption, setSelectedOption] = useState("none");
   const [showSelect, setShowSelect] = useState(false);
+  const [search, setSearch] = useState("");
 
   const { data: groupsData, isLoading } = useQuery({
     queryKey: ["groups"],
     queryFn: fetchGroups,
   });
+
+  const displayGroups = groupsData?.filter(
+    (group) => group.name.toLowerCase().indexOf(search.toLowerCase()) !== -1
+  );
 
   const handleSelectClick = () => {
     setShowSelect(true);
@@ -160,6 +165,8 @@ const GroupsTab = () => {
             </div>
             <input
               type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="block w-full rounded-none rounded-l-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
               placeholder="Trip to Oslo, Norway"
             />
@@ -183,7 +190,7 @@ const GroupsTab = () => {
           isLoading={isLoading}
           skeleton={<LoadingGroupsSkeleton />}
         >
-          {groupsData?.map((group) => (
+          {displayGroups?.map((group) => (
             <Group key={group.id} group={group} />
           ))}
         </SkeletonLoader>
